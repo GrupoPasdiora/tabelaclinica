@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabela de Preços — Recepção</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f1f5f9; min-height: 100vh; }
+
+  header {
+    background: #0f4c81;
+    color: white;
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 { font-size: 17px; font-weight: 800; }
+  header span { font-size: 12px; opacity: .7; }
+
+  .search-bar {
+    background: #1a6bb5;
+    padding: 16px 24px;
+  }
+  .search-bar input {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    background: white;
+    color: #1a2332;
+  }
+  .search-bar input::placeholder { color: #94a3b8; }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    padding: 16px 24px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    background: white;
+    color: #64748b;
+    transition: all .2s;
+  }
+  .tab.active { color: white; border-color: transparent; }
+  .tab[data-tab="todos"].active    { background: #0f4c81; }
+  .tab[data-tab="particular"].active { background: #16a34a; }
+  .tab[data-tab="ipam"].active     { background: #1d4ed8; }
+  .tab[data-tab="unimed"].active   { background: #7c3aed; }
+  .tab[data-tab="unimed-fora"].active { background: #ea580c; }
+  .tab[data-tab="geap"].active     { background: #059669; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+    padding: 16px 24px 32px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    transition: transform .15s, box-shadow .15s;
+    cursor: default;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.1); }
+
+  .card-header {
+    padding: 14px 16px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .card-title { font-size: 14px; font-weight: 700; color: #1a2332; line-height: 1.3; }
+  .card-sub   { font-size: 11px; color: #94a3b8; margin-top: 2px; font-weight: 500; }
+
+  .card-body { padding: 0 16px 14px; }
+
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+  }
+  .price-row:last-child { border-bottom: none; }
+  .price-label { color: #475569; font-weight: 500; flex: 1; }
+  .price-value {
+    font-weight: 800;
+    font-size: 15px;
+    margin-left: 12px;
+    white-space: nowrap;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .badge-pacote { background: #fef3c7; color: #92400e; }
+
+  .card-footer {
+    background: #f8fafc;
+    padding: 8px 16px;
+    font-size: 11px;
+    color: #94a3b8;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  /* Cores por convênio */
+  .color-particular .card-icon { background: #f0fdf4; }
+  .color-particular .price-value { color: #16a34a; }
+  .color-ipam .card-icon { background: #eff6ff; }
+  .color-ipam .price-value { color: #1d4ed8; }
+  .color-unimed .card-icon { background: #fdf4ff; }
+  .color-unimed .price-value { color: #7c3aed; }
+  .color-unimed-fora .card-icon { background: #fff7ed; }
+  .color-unimed-fora .price-value { color: #ea580c; }
+  .color-geap .card-icon { background: #ecfdf5; }
+  .color-geap .price-value { color: #059669; }
+
+  .aviso {
+    margin: 0 24px 16px;
+    background: #fff7ed;
+    border-left: 4px solid #f97316;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #7c2d12;
+    line-height: 1.5;
+  }
+
+  .empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+
+  @media (max-width: 500px) {
+    .grid { grid-template-columns: 1fr; padding: 12px; }
+    .tabs { padding: 12px 12px 0; }
+    header { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏥 Tabela de Preços</h1>
+  <span>Dr. Italo Cavalcante · CRM 1517-RO</span>
+</header>
+
+<div class="search-bar">
+  <input type="text" id="busca" placeholder="🔍  Buscar procedimento ou convênio..." oninput="filtrar()">
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="todos" onclick="mudarAba(this)">Todos</div>
+  <div class="tab" data-tab="particular" onclick="mudarAba(this)">Particular</div>
+  <div class="tab" data-tab="ipam" onclick="mudarAba(this)">IPAM</div>
+  <div class="tab" data-tab="unimed" onclick="mudarAba(this)">Unimed RO</div>
+  <div class="tab" data-tab="unimed-fora" onclick="mudarAba(this)">Unimed de Fora</div>
+  <div class="tab" data-tab="geap" onclick="mudarAba(this)">GEAP</div>
+</div>
+
+<div class="aviso">
+  ⚠️ <strong>Atenção:</strong> Confirme o convênio na carteirinha antes de lançar. Valor diferente desta tabela só com autorização do Dr. Italo.
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const dados = [
+  {
+    id: "particular",
+    cor: "color-particular",
+    icone: "👤",
+    titulo: "Consultas Particulares",
+    subtitulo: "Particular",
+    itens: [
+      { label: "Consulta Padrão", valor: "R$ 300,00" },
+      { label: "Zequinha Araújo", valor: "R$ 200,00" },
+      { label: "Paciente IPAM pagando particular", valor: "R$ 150,00" },
+      { label: "Ótica Azevedo", valor: "R$ 70,00" },
+    ],
+    rodape: null
+  },
+  {
+    id: "particular",
+    cor: "color-particular",
+    icone: "🔪",
+    titulo: "Cirurgia / Procedimentos Particulares",
+    subtitulo: "Particular",
+    itens: [
+      { label: "Capsulotomia", valor: "R$ 300,00" },
+      { label: "Pré-Operatório Catarata", valor: "R$ 300,00" },
+      { label: "Pacote Catarata", valor: "R$ 423,00" },
+    ],
+    rodape: null
+  },
+  {
+    id: "ipam",
+    cor: "color-ipam",
+    icone: "🏛️",
+    titulo: "IPAM",
+    subtitulo: "Convênio IPAM",
+    itens: [
+      { label: "Consulta IPAM", valor: "R$ 84,00" },
+      { label: "Pacote Catarata IPAM", valor: "R$ 423,00" },
+    ],
+    rodape: null
+  },
+  {
+    id: "unimed",
+    cor: "color-unimed",
+    icone: "💜",
+    titulo: "Unimed RO — Consulta",
+    subtitulo: "Convênio Unimed RO",
+    itens: [
+      { label: "Consulta Unimed Ro", valor: "R$ 100,00" },
+    ],
+    rodape: null
+  },
+  {
+    id: "unimed",
+    cor: "color-unimed",
+    icone: "🔬",
+    titulo: "Unimed RO — Exames",
+    subtitulo: "Convênio Unimed RO",
+    itens: [
+      { label: "Tonometria", valor: "R$ 6,00" },
+      { label: "Paquimetria", valor: "R$ 72,00" },
+      { label: "Microscopia", valor: "R$ 168,00" },
+      { label: "Biometria", valor: "R$ 96,00" },
+      { label: "Retinografia", valor: "R$ 28,80" },
+      { label: "Pot. de Acuidade Visual", valor: "R$ 24,00" },
+      { label: "Capsulotomia", valor: "R$ 173,40" },
+      { label: "📦 Pacote Ton+Paqui+Micro", valor: "R$ 246,00", pacote: true },
+    ],
+    rodape: null
+  },
+  {
+    id: "unimed-fora",
+    cor: "color-unimed-fora",
+    icone: "🧡",
+    titulo: "Unimed de Fora — Consulta",
+    subtitulo: "Convênio Unimed de Fora",
+    itens: [
+      { label: "Consulta Unimed de Fora", valor: "R$ 122,00" },
+    ],
+    rodape: "⚠️ Unimed de Fora ≠ Unimed RO — não misturar!"
+  },
+  {
+    id: "unimed-fora",
+    cor: "color-unimed-fora",
+    icone: "🔬",
+    titulo: "Unimed de Fora — Exames",
+    subtitulo: "Convênio Unimed de Fora",
+    itens: [
+      { label: "Tonometria", valor: "R$ 8,51" },
+      { label: "Paquimetria", valor: "R$ 102,16" },
+      { label: "Microscopia", valor: "R$ 238,40" },
+      { label: "Retinografia", valor: "R$ 40,86" },
+      { label: "Mapeamento", valor: "R$ 54,48" },
+      { label: "📦 Pacote Ton+Paqui+Micro", valor: "R$ 349,07", pacote: true },
+    ],
+    rodape: "⚠️ Unimed de Fora ≠ Unimed RO — não misturar!"
+  },
+  {
+    id: "geap",
+    cor: "color-geap",
+    icone: "🟢",
+    titulo: "GEAP — Consulta",
+    subtitulo: "Convênio GEAP",
+    itens: [
+      { label: "Consulta GEAP", valor: "R$ 65,00" },
+    ],
+    rodape: null
+  },
+  {
+    id: "geap",
+    cor: "color-geap",
+    icone: "🔬",
+    titulo: "GEAP — Exames",
+    subtitulo: "Convênio GEAP",
+    itens: [
+      { label: "Tonometria", valor: "R$ 20,60" },
+      { label: "Paquimetria", valor: "R$ 73,56" },
+      { label: "Microscopia", valor: "R$ 165,50" },
+      { label: "📦 Pacote Ton+Paqui+Micro", valor: "R$ 259,66", pacote: true },
+    ],
+    rodape: null
+  },
+];
+
+let abaAtiva = "todos";
+
+function renderCard(d) {
+  const rodape = d.rodape ? `<div class="card-footer">${d.rodape}</div>` : "";
+  const itens = d.itens.map(i => `
+    <div class="price-row">
+      <span class="price-label">${i.label}${i.pacote ? '<span class="badge badge-pacote">PACOTE</span>' : ''}</span>
+      <span class="price-value">${i.valor}</span>
+    </div>`).join("");
+  return `
+    <div class="card ${d.cor}" data-convenio="${d.id}" data-texto="${(d.titulo + ' ' + d.subtitulo + ' ' + d.itens.map(i=>i.label).join(' ')).toLowerCase()}">
+      <div class="card-header">
+        <div class="card-icon">${d.icone}</div>
+        <div>
+          <div class="card-title">${d.titulo}</div>
+          <div class="card-sub">${d.subtitulo}</div>
+        </div>
+      </div>
+      <div class="card-body">${itens}</div>
+      ${rodape}
+    </div>`;
+}
+
+function renderizar() {
+  const grid = document.getElementById("grid");
+  const busca = document.getElementById("busca").value.toLowerCase();
+  let cards = dados.filter(d => {
+    const convenioOk = abaAtiva === "todos" || d.id === abaAtiva;
+    const textoOk = !busca || (d.titulo + d.subtitulo + d.itens.map(i=>i.label).join(" ")).toLowerCase().includes(busca);
+    return convenioOk && textoOk;
+  });
+  grid.innerHTML = cards.length
+    ? cards.map(renderCard).join("")
+    : '<div class="empty">Nenhum resultado encontrado 🔍</div>';
+}
+
+function mudarAba(el) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  abaAtiva = el.dataset.tab;
+  renderizar();
+}
+
+function filtrar() { renderizar(); }
+
+renderizar();
+</script>
+</body>
+</html>
