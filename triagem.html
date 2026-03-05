@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Avaliação de Risco de Queda — Queda Zero 60+</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #8B7340;
+    --gold-light: #C4A84F;
+    --gold-pale: #F0E6C8;
+    --cream: #FAF7F0;
+    --dark: #1C1A14;
+    --text: #2E2A1E;
+    --muted: #7A7060;
+    --white: #FFFFFF;
+    --green: #4A8C5C;
+    --orange: #C4843A;
+    --red: #B84040;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ── HEADER ─── */
+  .header {
+    background: var(--dark);
+    padding: 20px 24px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .header-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--white);
+  }
+
+  .header-brand span { color: var(--gold-light); font-style: italic; }
+
+  .header-sub {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-top: 2px;
+  }
+
+  /* ── SCREENS ─── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── INTRO SCREEN ─── */
+  .intro-screen {
+    padding: 40px 24px 60px;
+    text-align: center;
+  }
+
+  .intro-icon {
+    width: 72px;
+    height: 72px;
+    background: var(--gold-pale);
+    border-radius: 50%;
+    margin: 0 auto 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border: 2px solid var(--gold-light);
+  }
+
+  .intro-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--dark);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .intro-title em { color: var(--gold); font-style: italic; }
+
+  .intro-desc {
+    font-size: 0.97rem;
+    color: var(--muted);
+    line-height: 1.75;
+    margin: 20px 0 32px;
+    font-weight: 300;
+  }
+
+  .intro-info {
+    background: var(--white);
+    border-left: 3px solid var(--gold-light);
+    padding: 16px 20px;
+    text-align: left;
+    margin-bottom: 36px;
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── NAME INPUT ─── */
+  .name-group {
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .name-group label {
+    display: block;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .name-group input {
+    width: 100%;
+    padding: 16px 18px;
+    border: 2px solid var(--gold-pale);
+    background: var(--white);
+    font-family: 'Source Serif 4', serif;
+    font-size: 1rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    border-radius: 2px;
+  }
+
+  .name-group input:focus {
+    border-color: var(--gold-light);
+  }
+
+  .name-group input::placeholder { color: var(--muted); opacity: 0.6; }
+
+  /* ── BUTTONS ─── */
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 18px;
+    background: var(--dark);
+    color: var(--gold-light);
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+
+  .btn-primary:hover { background: var(--gold); color: var(--white); }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 20px;
+    background: #25D366;
+    color: var(--white);
+    font-family: 'Source Serif 4', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    text-decoration: none;
+    margin-top: 8px;
+  }
+
+  .btn-whatsapp:hover { background: #1ebe5a; }
+  .btn-whatsapp:active { transform: scale(0.98); }
+
+  .btn-whatsapp svg { width: 24px; height: 24px; fill: white; }
+
+  .btn-secondary {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid var(--gold-pale);
+    cursor: pointer;
+    margin-top: 12px;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── PROGRESS ─── */
+  .progress-bar-wrap {
+    position: sticky;
+    top: 62px;
+    z-index: 40;
+    background: var(--cream);
+    padding: 14px 24px 0;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .progress-meta strong { color: var(--gold); }
+
+  .progress-track {
+    height: 3px;
+    background: var(--gold-pale);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── QUIZ SCREEN ─── */
+  .quiz-screen {
+    padding: 28px 24px 60px;
+  }
+
+  .question-card {
+    display: none;
+    animation: slideIn 0.3s ease;
+  }
+
+  .question-card.active { display: block; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .q-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--gold-pale);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .q-text {
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--dark);
+    line-height: 1.6;
+    margin-bottom: 32px;
+    min-height: 80px;
+  }
+
+  .answer-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .answer-btn {
+    padding: 22px 16px;
+    border: 2px solid var(--gold-pale);
+    background: var(--white);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .answer-btn:active { transform: scale(0.96); }
+
+  .answer-btn .answer-icon {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .answer-btn .answer-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dark);
+    display: block;
+  }
+
+  .answer-btn .answer-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: block;
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .answer-btn.yes:hover, .answer-btn.yes.selected {
+    border-color: var(--red);
+    background: #FFF5F5;
+  }
+
+  .answer-btn.no:hover, .answer-btn.no.selected {
+    border-color: var(--green);
+    background: #F5FBF7;
+  }
+
+  .answer-btn.yes.selected .answer-label { color: var(--red); }
+  .answer-btn.no.selected .answer-label { color: var(--green); }
+
+  /* ── RESULT SCREEN ─── */
+  .result-screen {
+    padding: 40px 24px 60px;
+  }
+
+  .result-badge {
+    text-align: center;
+    padding: 40px 24px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-badge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    border-radius: 2px;
+  }
+
+  .result-badge.low { background: #F5FBF7; border: 2px solid #4A8C5C; }
+  .result-badge.low::before { background: #4A8C5C; }
+  .result-badge.mid { background: #FFF9F0; border: 2px solid var(--orange); }
+  .result-badge.mid::before { background: var(--orange); }
+  .result-badge.high { background: #FFF5F5; border: 2px solid var(--red); }
+  .result-badge.high::before { background: var(--red); }
+
+  .result-icon { font-size: 3.5rem; margin-bottom: 12px; display: block; }
+
+  .result-level {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .result-badge.low .result-level { color: var(--green); }
+  .result-badge.mid .result-level { color: var(--orange); }
+  .result-badge.high .result-level { color: var(--red); }
+
+  .result-score {
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .result-desc {
+    font-size: 0.97rem;
+    color: var(--text);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .result-name {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  .result-section-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .result-section-title::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .result-actions {
+    margin-top: 32px;
+  }
+
+  .disclaimer {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 20px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .low-message {
+    background: var(--white);
+    border-left: 3px solid var(--green);
+    padding: 20px;
+    font-size: 0.92rem;
+    color: var(--text);
+    line-height: 1.7;
+    margin-top: 8px;
+  }
+
+  /* ── MINI SCORE BARS ─── */
+  .score-visual {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+    margin: 16px 0 0;
+  }
+
+  .score-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.1);
+  }
+
+  .score-dot.filled { background: currentColor; }
+
+  .result-badge.low .score-dot.filled { color: var(--green); }
+  .result-badge.mid .score-dot.filled { color: var(--orange); }
+  .result-badge.high .score-dot.filled { color: var(--red); }
+
+  /* ── FOOTER ─── */
+  .page-footer {
+    background: var(--dark);
+    padding: 20px 24px;
+    text-align: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+  }
+
+  .page-footer strong { color: var(--gold-light); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-brand">Queda <span>Zero</span> 60+</div>
+  <div class="header-sub">Avaliação de Risco de Queda</div>
+</header>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN 1: INTRO -->
+<!-- ══════════════════════════════════════════ -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-screen">
+
+    <div class="intro-icon">🛡️</div>
+    <p class="intro-tag">Programa de Prevenção</p>
+    <h1 class="intro-title">Avaliação de<br><em>Risco de Queda</em></h1>
+
+    <p class="intro-desc">
+      Responda 10 perguntas simples e descubra se você ou alguém da sua família tem risco elevado de queda.
+    </p>
+
+    <div class="intro-info">
+      ⏱️ <strong>Menos de 2 minutos</strong> — Sem cadastro, sem dados pessoais.<br><br>
+      Ao final, você saberá se precisa de uma avaliação médica preventiva.
+    </div>
+
+    <div class="name-group">
+      <label for="patient-name">Seu nome (ou do familiar)</label>
+      <input type="text" id="patient-name" placeholder="Ex: João Silva" autocomplete="off">
+    </div>
+
+    <button class="btn-primary" onclick="startQuiz()">
+      Iniciar Avaliação →
+    </button>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN 2: QUIZ -->
+<!-- ══════════════════════════════════════════ -->
+<div class="screen" id="screen-quiz">
+
+  <div class="progress-bar-wrap">
+    <div class="progress-meta">
+      <span>Pergunta <strong id="q-current">1</strong> de 10</span>
+      <span id="q-percent">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="quiz-screen" id="quiz-container">
+    <!-- Questions injected by JS -->
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN 3: RESULT -->
+<!-- ══════════════════════════════════════════ -->
+<div class="screen" id="screen-result">
+  <div class="result-screen">
+
+    <p class="result-section-title">Resultado da Avaliação</p>
+
+    <div class="result-badge" id="result-badge">
+      <span class="result-icon" id="result-icon"></span>
+      <div class="result-level" id="result-level"></div>
+      <div class="result-score" id="result-score"></div>
+      <div class="score-visual" id="score-dots"></div>
+      <p class="result-desc" id="result-desc"></p>
+      <p class="result-name" id="result-name"></p>
+    </div>
+
+    <div class="result-actions" id="result-actions"></div>
+
+    <p class="disclaimer">
+      Esta avaliação é informativa e não substitui consulta médica. Em caso de dúvidas, procure sempre um profissional de saúde.
+    </p>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <strong>Queda Zero 60+</strong> — Núcleo Médico de Prevenção de Quedas
+</footer>
+
+<script>
+  const WHATSAPP_NUMBER = '5569999686752';
+
+  const questions = [
+    "Você caiu alguma vez nos últimos 12 meses?",
+    "Já aconteceu de você quase cair e precisar se segurar em algo?",
+    "Dentro de casa, você costuma se apoiar em móveis ou paredes ao caminhar?",
+    "Para levantar do sofá ou cadeira, você precisa usar as mãos para se apoiar?",
+    "Ao subir ou descer escadas, você sente necessidade de segurar no corrimão para se sentir seguro?",
+    "Em calçadas irregulares ou locais escuros, você caminha mais devagar por receio de cair?",
+    "Você sente que sua visão piorou ou tem dificuldade para enxergar à noite?",
+    "Já sentiu tontura ou desequilíbrio ao levantar da cama ou da cadeira?",
+    "Você toma quatro ou mais medicamentos por dia?",
+    "Você já evitou sair sozinho ou caminhar porque tem receio de cair?"
+  ];
+
+  let answers = new Array(10).fill(null);
+  let currentQ = 0;
+  let patientName = '';
+
+  function startQuiz() {
+    patientName = document.getElementById('patient-name').value.trim() || 'Paciente';
+    showScreen('screen-quiz');
+    buildQuestions();
+    showQuestion(0);
+  }
+
+  function buildQuestions() {
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = '';
+    questions.forEach((q, i) => {
+      const card = document.createElement('div');
+      card.className = 'question-card';
+      card.id = 'q-' + i;
+      card.innerHTML = `
+        <div class="q-number">${String(i+1).padStart(2,'0')}</div>
+        <p class="q-text">${q}</p>
+        <div class="answer-options">
+          <button class="answer-btn yes" onclick="answer(${i}, true)">
+            <span class="answer-icon">✓</span>
+            <span class="answer-label">Sim</span>
+            <span class="answer-sub">Aconteceu comigo</span>
+          </button>
+          <button class="answer-btn no" onclick="answer(${i}, false)">
+            <span class="answer-icon">✗</span>
+            <span class="answer-label">Não</span>
+            <span class="answer-sub">Não aconteceu</span>
+          </button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function showQuestion(index) {
+    document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+    const card = document.getElementById('q-' + index);
+    if (card) card.classList.add('active');
+    updateProgress(index);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress(index) {
+    const pct = Math.round((index / 10) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('q-current').textContent = index + 1;
+    document.getElementById('q-percent').textContent = pct + '%';
+  }
+
+  function answer(qIndex, value) {
+    answers[qIndex] = value;
+
+    // Highlight selected
+    const card = document.getElementById('q-' + qIndex);
+    card.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+    const selected = card.querySelector(value ? '.yes' : '.no');
+    if (selected) selected.classList.add('selected');
+
+    // Move to next after brief delay
+    setTimeout(() => {
+      if (qIndex < 9) {
+        currentQ = qIndex + 1;
+        showQuestion(currentQ);
+      } else {
+        showResult();
+      }
+    }, 280);
+  }
+
+  function showResult() {
+    const score = answers.filter(a => a === true).length;
+
+    let level, icon, desc, badgeClass, actions;
+
+    if (score <= 1) {
+      level = 'Risco Baixo';
+      icon = '✅';
+      badgeClass = 'low';
+      desc = 'Seus resultados indicam baixo risco de queda no momento. Parabéns pelo cuidado com sua saúde!';
+      actions = `
+        <div class="low-message">
+          👍 Continue atento aos sinais do seu corpo. Recomendamos manter consultas oftalmológicas regulares — a visão é um dos principais fatores de equilíbrio e prevenção de quedas.
+        </div>
+        <button class="btn-secondary" onclick="restartQuiz()">Refazer a avaliação</button>
+      `;
+    } else if (score <= 3) {
+      level = 'Risco Moderado';
+      icon = '⚠️';
+      badgeClass = 'mid';
+      desc = 'Você apresenta alguns sinais de atenção. Uma avaliação preventiva é recomendada para identificar e corrigir fatores de risco antes que ocorra uma queda.';
+      const msg = encodeURIComponent(`Olá! Meu nome é ${patientName}. Fiz a avaliação do Programa Queda Zero 60+ e meu resultado foi: *RISCO MODERADO* (${score} sinais identificados). Gostaria de agendar uma avaliação preventiva.`);
+      actions = `
+        <p class="result-section-title" style="margin-top:0;">Próximo passo recomendado</p>
+        <a class="btn-whatsapp" href="https://wa.me/${WHATSAPP_NUMBER}?text=${msg}" target="_blank">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          Agendar Avaliação Preventiva
+        </a>
+        <button class="btn-secondary" onclick="restartQuiz()">Refazer a avaliação</button>
+      `;
+    } else {
+      level = 'Risco Elevado';
+      icon = '🚨';
+      badgeClass = 'high';
+      desc = 'Você apresenta vários sinais de risco elevado de queda. Uma avaliação médica urgente é recomendada. Entre em contato com a clínica agora.';
+      const msg = encodeURIComponent(`Olá! Meu nome é ${patientName}. Fiz a avaliação do Programa Queda Zero 60+ e meu resultado foi: *RISCO ELEVADO* (${score} sinais identificados). Preciso agendar uma avaliação com urgência.`);
+      actions = `
+        <p class="result-section-title" style="margin-top:0;">Ação urgente recomendada</p>
+        <a class="btn-whatsapp" href="https://wa.me/${WHATSAPP_NUMBER}?text=${msg}" target="_blank">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          Falar com a Clínica Agora
+        </a>
+        <button class="btn-secondary" onclick="restartQuiz()">Refazer a avaliação</button>
+      `;
+    }
+
+    // Render dots
+    let dots = '';
+    for (let i = 0; i < 10; i++) {
+      dots += `<div class="score-dot ${i < score ? 'filled' : ''}"></div>`;
+    }
+
+    document.getElementById('result-badge').className = 'result-badge ' + badgeClass;
+    document.getElementById('result-icon').textContent = icon;
+    document.getElementById('result-level').textContent = level;
+    document.getElementById('result-score').textContent = score + ' de 10 sinais identificados';
+    document.getElementById('score-dots').innerHTML = dots;
+    document.getElementById('result-desc').textContent = desc;
+    document.getElementById('result-name').textContent = 'Avaliação de ' + patientName;
+    document.getElementById('result-actions').innerHTML = actions;
+
+    showScreen('screen-result');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function restartQuiz() {
+    answers = new Array(10).fill(null);
+    currentQ = 0;
+    showScreen('screen-intro');
+    window.scrollTo({ top: 0 });
+  }
+</script>
+</body>
+</html>
